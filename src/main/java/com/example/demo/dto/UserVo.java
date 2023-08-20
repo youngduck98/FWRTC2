@@ -24,7 +24,7 @@ public class UserVo {
 		this.user_uid = user.getUid();
 		this.nickname = user.getNickname();
 		this.profileImg = user.getProfile_img_path();
-		this.company = user.getHistory().getUid();
+		this.company = user.getHistory().getCompanyName();
 		if(user.getHistory().getVaild())
 			this.enddate = user.getHistory().getDate();
 		else

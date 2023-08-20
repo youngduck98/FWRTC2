@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService{
 		log.info("3. find company uid in company Table by using company name");
 		UserHistoryEntity userHistory = userOptional.get().getHistory();
 		
-		
+		log.info(company_name);
 		log.info("5. update user info by using company_uuid");
 		try {
 			userHistory.updateCompanyName(company_name);
@@ -182,6 +182,7 @@ public class UserServiceImpl implements UserService{
 		
 		UserHistoryEntity user_history = userOptional.get().getHistory();
 		
+		log.info("custom_date:" + date.getDate().toString());
 		try {
 			user_history.updateEnddate(date);;
 			UR.save(userOptional.get());
