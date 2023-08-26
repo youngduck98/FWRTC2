@@ -1,5 +1,7 @@
 package com.example.demo.service.serviceImpl;
 
+import static org.hamcrest.CoreMatchers.nullValue;
+
 import java.util.Optional;
 
 import org.springframework.stereotype.Component;
@@ -35,17 +37,19 @@ public class LetterAditionalTransaction {
 	@Transactional(rollbackOn = Exception.class)
 	public Long saveReplyTransaction(UserEntity user, LetterRequestDTO letter){
 		log.info("3. try to save reply to database");
-		LetterEntity letterEntity;
-		letterEntity = LR.save(
-				LetterEntity.builder()
+		LetterEntity letterEntity = LetterEntity.builder()
 				.designUid(letter.getLetter_design_uid())
 				.user(user)
 				.colorcode(letter.getColorcode())
 				.title(letter.getTitle())
 				.text(letter.getContent())
 				.reply(true)
-				.build()
-				);
+				.build();
+		
+		if(letterEntity.getUid() == Long.valueOf(letter.getLetter_design_uid())) {
+			return null;
+		}
+		LR.save(letterEntity);
 		
 		log.info("4. try to relate letter and reply");
 		Optional<LetterEntity> relatedLetter = LR.findById(letter.getRelated_letter_uid());

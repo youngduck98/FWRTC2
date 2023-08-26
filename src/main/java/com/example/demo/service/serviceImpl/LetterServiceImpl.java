@@ -1,16 +1,24 @@
 package com.example.demo.service.serviceImpl;
 
+import static org.hamcrest.CoreMatchers.nullValue;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.LetterRequestDTO;
+import com.example.demo.dto.TempLetterDTO;
+import com.example.demo.dto.TempLetterRequestDTO;
 import com.example.demo.entity.AccountInfoEntity;
 import com.example.demo.entity.LetterEntity;
+import com.example.demo.entity.TempLetterEntity;
 import com.example.demo.entity.UserEntity;
 import com.example.demo.repository.AccountInfoRepositoy;
 import com.example.demo.repository.LetterRecipientRepository;
 import com.example.demo.repository.LetterRepository;
+import com.example.demo.repository.TempLetterRepository;
 import com.example.demo.repository.UserHistoryRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.LetterService;
@@ -29,6 +37,7 @@ public class LetterServiceImpl implements LetterService{
 	private final UserRepository UR;
 	private final AccountInfoRepositoy AIR;
 	private final LetterRepository LR;
+	private final TempLetterRepository TLR;
 	private final LetterRecipientRepository LRR;
 	private final LetterAditionalTransaction LAT;
 	private static final String backdoor = "0000";
@@ -119,7 +128,103 @@ public class LetterServiceImpl implements LetterService{
 		}
 		
 		return ret;
-	} 
-	
-	
+	}
+
+	@Override
+	public Long changeTempLetter(String token, TempLetterRequestDTO tempLetter) {
+		// TODO Auto-generated method stub
+		Optional<UserEntity> userOptional = getUserfromToken(token);
+		if(userOptional.isEmpty()) {
+			log.error("custom_error: cant find user in user table but entolled in account table");
+			return null;
+		}
+		
+		Optional<TempLetterEntity> tempLetterOptional = TLR.findById(tempLetter.getTemp_letter_uid());
+		if(tempLetterOptional.isEmpty()) {
+			log.error("can't find temp letter + " + tempLetter.getTemp_letter_uid());
+			return null;
+		}
+		
+		TempLetterEntity tempLetterEntity = tempLetterOptional.get();
+		try {
+			tempLetterEntity.update_info(tempLetter.getLetter_design_uid(), tempLetter.getColorcode(), 
+					tempLetter.getTitle(), tempLetter.getContent(), tempLetter.getRelated_letter_uid());
+			TLR.save(tempLetterEntity);
+		}
+		catch (Exception e) {
+			log.error("failed to update temp letter");
+			return null;
+		}
+		return tempLetterEntity.getUid();
+	}
+
+	@Override
+	public Long saveTempLetter(String token, TempLetterRequestDTO tempLetter) {
+		// TODO Auto-generated method stub
+		Optional<UserEntity> userOptional = getUserfromToken(token);
+		if(userOptional.isEmpty()) {
+			log.error("custom_error: cant find user in user table but entolled in account table");
+			return null;
+		}
+		
+		log.info("3. try to save temp letter to database");
+		TempLetterEntity templetterEntity;
+		try {
+			 templetterEntity = TLR.save(
+					TempLetterEntity.builder()
+					.designUid(tempLetter.getLetter_design_uid())
+					.user(userOptional.get())
+					.colorcode(tempLetter.getColorcode())
+					.title(tempLetter.getTitle())
+					.text(tempLetter.getContent())
+					.related_uuid(tempLetter.getRelated_letter_uid())
+					.build()
+					);
+		}
+		catch(Exception e){
+			log.error("failed to save letter to database");
+			return null;
+		}
+		
+		return templetterEntity.getUid();
+	}
+
+	@Override
+	public List<TempLetterDTO> getTempList(String token) {
+		// TODO Auto-generated method stub
+		Optional<UserEntity> userOptional = getUserfromToken(token);
+		if(userOptional.isEmpty()) {
+			log.error("custom_error: cant find user in user table but enrolled in account table");
+			return null;
+		}
+		List<TempLetterDTO> ret = new ArrayList<>();
+		
+		try {
+			List<TempLetterEntity> temp_letter_List = TLR.findAll();
+			for(TempLetterEntity letter: temp_letter_List) {
+				ret.add(letter.getTempLetterDTO());
+			}
+		}
+		catch(Exception e) {
+			return null;
+		}
+		
+		return ret;
+	}
+
+	@Override
+	public TempLetterDTO getTempLetter(String token, long tempLetterUid) {
+		// TODO Auto-generated method stub
+		Optional<UserEntity> userOptional = getUserfromToken(token);
+		if(userOptional.isEmpty()) {
+			log.error("custom_error: cant find user in user table but enrolled in account table");
+			return null;
+		}
+		
+		Optional<TempLetterEntity> tempLetterOptional = TLR.findById(tempLetterUid);
+		if(tempLetterOptional.isEmpty())
+			return null;
+		
+		return tempLetterOptional.get().getTempLetterDTO();
+	}
 }
