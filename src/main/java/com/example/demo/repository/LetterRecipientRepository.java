@@ -12,8 +12,11 @@ import com.example.demo.dto.AbstractLetterDTO;
 import com.example.demo.entity.LetterEntity;
 import com.example.demo.entity.LetterRecipientEntity;
 import com.example.demo.entity.UserEntity;
+import com.example.demo.entity.UserHistoryEntity;
 
 @Repository
 public interface LetterRecipientRepository extends JpaRepository<LetterRecipientEntity, Long>{
 	List<LetterRecipientEntity> findAllBySender(UserEntity sender);
+	List<LetterRecipientEntity> findAllByHistory(UserHistoryEntity history);
+	List<LetterRecipientEntity> findAllByLetter(LetterEntity letter);
 }

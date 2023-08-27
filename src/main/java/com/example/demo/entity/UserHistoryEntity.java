@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import com.example.demo.dto.DateDTO;
 
@@ -57,5 +58,16 @@ public class UserHistoryEntity {
 	
 	public boolean getVaild() {
 		return this.vaild;
+	}
+	
+	public UserHistoryEntity generate(String name) {
+		return UserHistoryEntity.builder()
+				.companyName(name)
+				.date(this.date)
+				.uid(UUID.randomUUID().toString())
+				.userUid(this.userUid)
+				.vaild(this.vaild)
+				.build();
+				
 	}
 }

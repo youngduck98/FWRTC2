@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.LetterDTO;
 import com.example.demo.dto.LetterRequestDTO;
+import com.example.demo.dto.talkRelatedDTO.CompanyDTO;
 import com.example.demo.service.LetterService;
 
 import lombok.RequiredArgsConstructor;
@@ -51,5 +52,10 @@ public class LetterController {
 			@RequestParam("letter_uid") long letterUid) {
 		LetterDTO ret = ls.getOneLetter(token, letterUid);
 		return ret;
+	}
+	
+	@GetMapping("/open_talk")
+	public List<CompanyDTO> get_talk(@RequestHeader(value="firebase_token") String token){
+		return ls.getTalk(token);
 	}
 }

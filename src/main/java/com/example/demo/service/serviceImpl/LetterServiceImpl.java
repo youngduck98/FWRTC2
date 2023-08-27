@@ -1,10 +1,10 @@
 package com.example.demo.service.serviceImpl;
 
-import static org.hamcrest.CoreMatchers.not;
-
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
@@ -15,6 +15,8 @@ import com.example.demo.dto.LetterRequestDTO;
 import com.example.demo.dto.TempLetterDTO;
 import com.example.demo.dto.TempLetterRequestDTO;
 import com.example.demo.dto.talkRelatedDTO.CompanyDTO;
+import com.example.demo.dto.talkRelatedDTO.Talk;
+import com.example.demo.dto.talkRelatedDTO.TalkTalk;
 import com.example.demo.entity.AccountInfoEntity;
 import com.example.demo.entity.LetterEntity;
 import com.example.demo.entity.LetterRecipientEntity;
@@ -34,7 +36,6 @@ import com.google.firebase.auth.FirebaseToken;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.asm.Advice.Return;
 
 @Slf4j
 @Service
@@ -327,13 +328,14 @@ public class LetterServiceImpl implements LetterService{
 		return letterAndUserDTOs;
 	}
 	
-	public CompanyDTO ReturnCompanyDtoFromHistory(UserHistoryEntity history) {
+	public CompanyDTO ReturnCompanyDtoFromHistory(UserHistoryEntity history, UserEntity user) {
 		return CompanyDTO.builder()
 				.company_name(history.getCompanyName())
 				.company_uid(history.getUid())
 				.companyImg(null)
 				.endDate(history.getDate())
 				.recent_text("text")
+				.talkList(LAT.ReturnTalkFromHistory(history, user))
 				.build();
 	}
 
@@ -347,15 +349,13 @@ public class LetterServiceImpl implements LetterService{
 		}
 		
 		List<UserHistoryEntity> userHistoryEntities = UHR.findByUserUid(userOptional.get().getUid());
-		
 		List<CompanyDTO> ret = new ArrayList<>();
 		
 		for(UserHistoryEntity history: userHistoryEntities) {
-			ret.add(ReturnCompanyDtoFromHistory(history));
+			ret.add(ReturnCompanyDtoFromHistory(history, userOptional.get()));
 		}
-		
 		return ret;
 	}
-	
+	//end
 	
 }

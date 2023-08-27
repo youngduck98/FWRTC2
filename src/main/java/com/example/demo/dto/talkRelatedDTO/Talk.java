@@ -1,5 +1,12 @@
 package com.example.demo.dto.talkRelatedDTO;
 
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@Builder
 public class Talk {
 	String talk_title;
 	String talk_text;

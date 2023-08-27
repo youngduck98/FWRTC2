@@ -28,6 +28,7 @@ public class UserServiceImpl implements UserService{
 	private final UserHistoryRepository UHR;
 	private final UserRepository UR;
 	private final AccountInfoRepositoy AIR;
+	private final UserAditionalTransaction UAT;
 	private static final String backdoor = "0000"; 
 	private final static String default_kakao_uid = "fake_user";
 	
@@ -64,6 +65,42 @@ public class UserServiceImpl implements UserService{
 	
 	@Override
 	public String change_user_company(String token, String company_name) {
+		log.info("0. check token is vaild and extract kakao_uid");
+		String kakao_uid = default_kakao_uid;
+		try {
+			kakao_uid = extractKakaoUidInTokenOptional(token).get();
+		}
+		catch (Exception e) {
+			log.error("faild in extractKakaoUidInTokenOptional");
+			return null;
+		}
+		
+		log.info("1. find user_uid by using kakao_uid");
+		Optional<AccountInfoEntity> accountOptional = AIR.findByKakaoUid(kakao_uid);
+		if(accountOptional.isEmpty()) {
+			log.error("custom_error: unexpected user, but enrolled in kakao");
+			return null;
+		}
+		
+		log.info("2. find user by using user_uid");
+		Optional<UserEntity> userOptional = UR.findById(accountOptional.get().getUserUid());
+		if(userOptional.isEmpty()) {
+			log.error("custom_error: cant find user in user table but entolled in account table");
+			return null;
+		}
+		
+		log.info("3. find company uid in company Table by using company name");
+		UserHistoryEntity userHistory = userOptional.get().getHistory().generate(company_name);
+		if(company_name == null) {
+			return userHistory.getUid();
+		}
+		
+		UHR.save(userHistory);
+		
+		return UAT.injectHistoryToUser(userHistory, userOptional.get());
+	}
+	
+	public String change_user_company_name(String token, String company_name) {
 		/*
 		 * 0. check token is vaild and extract kakao_uid
 		 * 1. find user_uid by using kakao_uid
