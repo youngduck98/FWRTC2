@@ -34,6 +34,9 @@ public class UserHistoryEntity {
 	@Column(name = "end_date")
 	LocalDate date;
 	
+	@Column(name = "user_uid")
+	String userUid;
+	
 	@Column(name = "vaild", columnDefinition = "TINYINT")
 	boolean vaild;
 	

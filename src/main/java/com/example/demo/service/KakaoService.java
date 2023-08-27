@@ -30,7 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class KakaoService {
-	
 	private final static String KAKAO_API_URI = "https://kapi.kakao.com";
 	private final AccountInfoRepositoy air;
 	private final UserRepository Ur;
@@ -76,7 +75,6 @@ public class KakaoService {
 	
 	
 	public Optional<KakaoVo> getUserInfoAtKakaoToken(String accessToken) {
-        
 		//HttpHeader 생성
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + accessToken);
@@ -185,7 +183,6 @@ public class KakaoService {
             	}
         	}
         }
- 
         return Optional.ofNullable(FirebaseAuth.getInstance().createCustomToken(userRecord.getUid()));
     }
 }

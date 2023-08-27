@@ -55,4 +55,6 @@ public class UserController {
 	public UserVo getUserInfo(@RequestHeader(value="firebase_token") String token){
 		return userService.userInfo(token).get();
 	}
+	
+	
 }

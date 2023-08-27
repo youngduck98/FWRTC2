@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -48,6 +49,10 @@ public class LetterRecipientEntity implements Serializable{
 	@OneToOne
 	@JoinColumn(name = "reply_letter_uid")
 	LetterEntity reply;
+	
+	@ManyToOne
+	@JoinColumn(name = "history_uid")
+	UserHistoryEntity history;
 	
 	@Column(name = "datetime")
 	LocalDateTime replyTime;

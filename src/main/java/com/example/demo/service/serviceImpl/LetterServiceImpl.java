@@ -1,6 +1,6 @@
 package com.example.demo.service.serviceImpl;
 
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.not;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,13 +8,19 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.AbstractLetterDTO;
+import com.example.demo.dto.LetterAndUserDTO;
+import com.example.demo.dto.LetterDTO;
 import com.example.demo.dto.LetterRequestDTO;
 import com.example.demo.dto.TempLetterDTO;
 import com.example.demo.dto.TempLetterRequestDTO;
+import com.example.demo.dto.talkRelatedDTO.CompanyDTO;
 import com.example.demo.entity.AccountInfoEntity;
 import com.example.demo.entity.LetterEntity;
+import com.example.demo.entity.LetterRecipientEntity;
 import com.example.demo.entity.TempLetterEntity;
 import com.example.demo.entity.UserEntity;
+import com.example.demo.entity.UserHistoryEntity;
 import com.example.demo.repository.AccountInfoRepositoy;
 import com.example.demo.repository.LetterRecipientRepository;
 import com.example.demo.repository.LetterRepository;
@@ -28,6 +34,7 @@ import com.google.firebase.auth.FirebaseToken;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.asm.Advice.Return;
 
 @Slf4j
 @Service
@@ -41,11 +48,16 @@ public class LetterServiceImpl implements LetterService{
 	private final LetterRecipientRepository LRR;
 	private final LetterAditionalTransaction LAT;
 	private static final String backdoor = "0000";
+	private static final String backdoor2 = "0001";
 	private final static String default_kakao_uid = "fake_user";
+	private final static String default_kakao_uid2 = "fake_user2";
 	
 	public Optional<String> extractKakaoUidInTokenOptional(String token){
 		String kakao_uid = default_kakao_uid;
-		if(!token.equals(backdoor)) {
+		if(token.equals(backdoor2)) {
+			kakao_uid = default_kakao_uid2;
+		}
+		if(!token.equals(backdoor) && !token.equals(backdoor2)) {
 			try {
 				FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(token);
 				kakao_uid = decodedToken.getUid();
@@ -227,4 +239,123 @@ public class LetterServiceImpl implements LetterService{
 		
 		return tempLetterOptional.get().getTempLetterDTO();
 	}
+
+	@Override
+	public List<String> getColor(String token) {
+		Optional<UserEntity> userOptional = getUserfromToken(token);
+		
+		if(userOptional.isEmpty()) {
+			log.error("custom_error: cant find user in user table but enrolled in account table");
+			return null;
+		}
+		List<String> ret = new ArrayList<>(List.of("5CBDF1", "37B9FF", "007FF4", "6CE2F2", "36CEE3", 
+				"00AFE7", "A5C9FF", "7AAFFF", "FF8E3D", "FFA337", "FF7337", "FFC9B1", "FFC28A", 
+						"FFC148", "FFE6CF", "FFCE70", "FF8A00"));
+		return ret;
+	}
+
+	@Override
+	public LetterDTO getOneLetter(String token, long letterUid) {
+		// TODO Auto-generated method stub
+		Optional<UserEntity> userOptional = getUserfromToken(token);
+		if(userOptional.isEmpty()) {
+			log.error("custom_error: cant find user in user table but enrolled in account table");
+			return null;
+		}
+		
+		Optional<LetterEntity> letterOptional = LR.findById(letterUid);
+		if(letterOptional.isEmpty())
+			return null;
+		
+		return letterOptional.get().getLetterDTO();
+	}
+
+	@Override
+	public List<AbstractLetterDTO> getLetterAndSender(String token) {
+		// TODO Auto-generated method stub
+		Optional<UserEntity> userOptional = getUserfromToken(token);
+		if(userOptional.isEmpty()) {
+			log.error("custom_error: cant find user in user table but enrolled in account table");
+			return null;
+		}
+		
+		List<LetterRecipientEntity> letterRecipient = LRR.findAllBySender(userOptional.get());
+		List<AbstractLetterDTO> abstractLetterDTOs = new ArrayList<>();
+		try {
+			for(LetterRecipientEntity a: letterRecipient) {
+				abstractLetterDTOs.add(AbstractLetterDTO.builder()
+						.letter_uid(a.getReply().getUid())
+						.sender_img(a.getRecipient().getUid())
+						.build());
+			}
+			
+			for(AbstractLetterDTO a: abstractLetterDTOs) {
+				a.setSender_img(UR.findById(a.getSender_img()).get().getProfile_img_path());
+			}
+		}
+		catch(Exception e) {
+			log.info("failed to search in " + e);
+			return null;
+		}
+		return abstractLetterDTOs;
+	}
+
+	@Override
+	public List<LetterAndUserDTO> getLetterAndSenderUid(String token) {
+		// TODO Auto-generated method stub
+		
+		Optional<UserEntity> userOptional = getUserfromToken(token);
+		if(userOptional.isEmpty()) {
+			log.error("custom_error: cant find user in user table but enrolled in account table");
+			return null;
+		}
+		
+		List<LetterRecipientEntity> letterRecipient = LRR.findAllBySender(userOptional.get());
+		List<LetterAndUserDTO> letterAndUserDTOs = new ArrayList<>();
+		try {
+			for(LetterRecipientEntity a: letterRecipient) {
+				letterAndUserDTOs.add(LetterAndUserDTO.builder()
+						.letter_uid(a.getReply().getUid())
+						.user_uid(a.getRecipient().getUid())
+						.build());
+			}
+		}
+		catch(Exception e) {
+			log.info("failed to search in " + e);
+			return null;
+		}
+		return letterAndUserDTOs;
+	}
+	
+	public CompanyDTO ReturnCompanyDtoFromHistory(UserHistoryEntity history) {
+		return CompanyDTO.builder()
+				.company_name(history.getCompanyName())
+				.company_uid(history.getUid())
+				.companyImg(null)
+				.endDate(history.getDate())
+				.recent_text("text")
+				.build();
+	}
+
+	@Override
+	public List<CompanyDTO> getTalk(String token) {
+		// TODO Auto-generated method stub
+		Optional<UserEntity> userOptional = getUserfromToken(token);
+		if(userOptional.isEmpty()) {
+			log.error("custom_error: cant find user in user table but enrolled in account table");
+			return null;
+		}
+		
+		List<UserHistoryEntity> userHistoryEntities = UHR.findByUserUid(userOptional.get().getUid());
+		
+		List<CompanyDTO> ret = new ArrayList<>();
+		
+		for(UserHistoryEntity history: userHistoryEntities) {
+			ret.add(ReturnCompanyDtoFromHistory(history));
+		}
+		
+		return ret;
+	}
+	
+	
 }

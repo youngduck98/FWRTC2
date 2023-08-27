@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 
 import java.util.Optional;
 
+import org.springframework.data.repository.init.UnmarshallingResourceReader;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,7 @@ import com.example.demo.dto.LetterRequestDTO;
 import com.example.demo.entity.LetterEntity;
 import com.example.demo.entity.LetterRecipientEntity;
 import com.example.demo.entity.UserEntity;
+import com.example.demo.entity.UserHistoryEntity;
 import com.example.demo.repository.AccountInfoRepositoy;
 import com.example.demo.repository.LetterRecipientRepository;
 import com.example.demo.repository.LetterRepository;
@@ -58,6 +60,7 @@ public class LetterAditionalTransaction {
 				.recipient(user)
 				.letter(relatedLetter.get())
 				.reply(letterEntity)
+				.history(relatedLetter.get().getUser().getHistory())
 				.build());
 		return letterEntity.getUid();
 	}

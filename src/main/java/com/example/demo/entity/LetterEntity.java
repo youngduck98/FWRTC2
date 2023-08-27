@@ -2,6 +2,8 @@ package com.example.demo.entity;
 
 import java.time.LocalDate;
 
+import com.example.demo.dto.LetterDTO;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -46,4 +48,15 @@ public class LetterEntity {
 	
 	@Column(name = "reply", columnDefinition = "TINYINT")
 	Boolean reply;
+	
+	public LetterDTO getLetterDTO() {
+		LetterDTO letter = new LetterDTO();
+		letter.setColor_code(this.colorcode);
+		letter.setContent(this.text);
+		letter.setLetter_design_uid(this.designUid);
+		letter.setReply(this.reply);
+		letter.setTitle(this.title);
+		
+		return letter;
+	}
 }

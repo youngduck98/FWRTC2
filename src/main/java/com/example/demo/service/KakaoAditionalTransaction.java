@@ -34,6 +34,7 @@ public class KakaoAditionalTransaction {
     			.build()));
 		UserHistoryEntity userHistory = UHER.save(UserHistoryEntity.builder()
 				.uid(UUID.randomUUID().toString())
+				.userUid(userAccount.get().getUserUid())
 				.companyName(null)
 				.build());
     	Ur.save(UserEntity.builder()
