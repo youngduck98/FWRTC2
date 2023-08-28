@@ -45,14 +45,14 @@ public class TempLetterEntity {
 	String text;
 	
 	@Column(name = "related_uuid")
-	Long related_uuid;
+	Long relatedUid;
 	
 	public void update_info(long designUid, String colorcode, String title, String text, Long related_uuid) {
 		this.designUid = designUid;
 		this.colorcode = colorcode;
 		this.title = title;
 		this.text = text;
-		this.related_uuid = related_uuid;
+		this.relatedUid = related_uuid;
 	}
 	
 	public TempLetterDTO getTempLetterDTO() {
@@ -60,10 +60,10 @@ public class TempLetterEntity {
 		temp_Letter.setColor_code(this.colorcode);
 		temp_Letter.setContent(this.text);
 		temp_Letter.setLetter_design_uid(this.designUid);
-		temp_Letter.setRelated_letter_uid(this.related_uuid);
+		temp_Letter.setRelated_letter_uid(this.relatedUid);
 		temp_Letter.setTemp_letter_uid(this.uid);
 		temp_Letter.setTitle(this.title);
-		if(temp_Letter.getRelated_letter_uid().longValue() == 0) {
+		if(temp_Letter.getRelated_letter_uid() != null && temp_Letter.getRelated_letter_uid() == 0) {
 			temp_Letter.setRelated_letter_uid(null);
 		}
 		return temp_Letter;

@@ -17,11 +17,13 @@ import com.example.demo.dto.talkRelatedDTO.Talk;
 import com.example.demo.dto.talkRelatedDTO.TalkTalk;
 import com.example.demo.entity.LetterEntity;
 import com.example.demo.entity.LetterRecipientEntity;
+import com.example.demo.entity.TempLetterEntity;
 import com.example.demo.entity.UserEntity;
 import com.example.demo.entity.UserHistoryEntity;
 import com.example.demo.repository.AccountInfoRepositoy;
 import com.example.demo.repository.LetterRecipientRepository;
 import com.example.demo.repository.LetterRepository;
+import com.example.demo.repository.TempLetterRepository;
 import com.example.demo.repository.UserHistoryRepository;
 import com.example.demo.repository.UserRepository;
 
@@ -39,6 +41,7 @@ public class LetterAditionalTransaction {
 	private final AccountInfoRepositoy AIR;
 	private final LetterRepository LR;
 	private final LetterRecipientRepository LRR;
+	private final TempLetterRepository TLR;
 	private static final String backdoor = "0000";
 	private final static String default_kakao_uid = "fake_user";
 	
@@ -68,7 +71,7 @@ public class LetterAditionalTransaction {
 	}
 	
 	public List<TalkTalk> ReturnTalkFromHistory(UserHistoryEntity history, UserEntity user) {
-		List<LetterRecipientEntity> letterRecipientEntities = LRR.findAllByHistory(history);//history가 letter 기준으로 update 되던가?
+		List<LetterRecipientEntity> letterRecipientEntities = LRR.findAllByHistory(history);//history가 letter 기준으로 update 되던가? ㅇㅇ
 		Set<LetterEntity> letterSet = new HashSet<LetterEntity>();
 		List<TalkTalk> ret = new ArrayList<>();
 		
@@ -96,6 +99,11 @@ public class LetterAditionalTransaction {
 				.text(letter.getContent())
 				.reply(true)
 				.build();
+		
+		List<TempLetterEntity> letterEntities = TLR.findByRelatedUidAndUser(letter.getRelated_letter_uid(), user);
+		for(TempLetterEntity tempLetterEntity : letterEntities) {
+			TLR.delete(tempLetterEntity);
+		}
 		
 		if(letterEntity.getUid() == Long.valueOf(letter.getLetter_design_uid())) {
 			return null;

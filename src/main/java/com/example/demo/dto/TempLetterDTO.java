@@ -1,5 +1,7 @@
 package com.example.demo.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +14,7 @@ public class TempLetterDTO {
 	String title;
 	String content;
 	long letter_design_uid;
+	@JsonProperty("colorcode")
 	String color_code;
 	Long related_letter_uid;
 }

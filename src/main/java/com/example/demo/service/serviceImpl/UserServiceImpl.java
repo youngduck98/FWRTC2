@@ -219,7 +219,6 @@ public class UserServiceImpl implements UserService{
 		
 		UserHistoryEntity user_history = userOptional.get().getHistory();
 		
-		log.info("custom_date:" + date.getDate().toString());
 		try {
 			user_history.updateEnddate(date);;
 			UR.save(userOptional.get());

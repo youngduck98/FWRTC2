@@ -132,6 +132,21 @@ public class LetterServiceImpl implements LetterService{
 			return null;
 		}
 		
+		if(letter.getRelated_letter_uid() != null) {
+			Optional<LetterEntity> letterentityOptional = LR.findById(letter.getRelated_letter_uid());
+			if(letterentityOptional.isEmpty()) {
+				log.error("no related letter like that");
+				return null;
+			}
+			
+			List<LetterRecipientEntity> letterReList = 
+					LRR.findByRecipientAndLetter(userOptional.get(), letterentityOptional.get());
+			if(!letterReList.isEmpty()) {
+				log.error("alreadly reply to that letter");
+				return null;
+			}
+		}
+		
 		Long ret =  null;
 		try {
 			ret = LAT.saveReplyTransaction(userOptional.get(), letter);
@@ -150,6 +165,19 @@ public class LetterServiceImpl implements LetterService{
 		if(userOptional.isEmpty()) {
 			log.error("custom_error: cant find user in user table but entolled in account table");
 			return null;
+		}
+		
+		if(tempLetter.getRelated_letter_uid() != null) {
+			Optional<LetterEntity> letterentityOptional = LR.findById(tempLetter.getRelated_letter_uid());
+			if(letterentityOptional.isEmpty()) {
+				return null;
+			}
+			
+			List<LetterRecipientEntity> letterReList = 
+					LRR.findByRecipientAndLetter(userOptional.get(), letterentityOptional.get());
+			if(!letterReList.isEmpty()) {
+				return null;
+			}
 		}
 		
 		Optional<TempLetterEntity> tempLetterOptional = TLR.findById(tempLetter.getTemp_letter_uid());
@@ -180,6 +208,20 @@ public class LetterServiceImpl implements LetterService{
 			return null;
 		}
 		
+		if(tempLetter.getRelated_letter_uid() != null) {
+			Optional<LetterEntity> letterentityOptional = LR.findById(tempLetter.getRelated_letter_uid());
+			if(letterentityOptional.isEmpty()) {
+				log.info("no letter like that");
+				return null;
+			}
+			
+			List<LetterRecipientEntity> letterReList = 
+					LRR.findByRecipientAndLetter(userOptional.get(), letterentityOptional.get());
+			if(!letterReList.isEmpty()) {
+				return null;
+			}
+		}
+		
 		log.info("3. try to save temp letter to database");
 		TempLetterEntity templetterEntity;
 		try {
@@ -190,7 +232,7 @@ public class LetterServiceImpl implements LetterService{
 					.colorcode(tempLetter.getColorcode())
 					.title(tempLetter.getTitle())
 					.text(tempLetter.getContent())
-					.related_uuid(tempLetter.getRelated_letter_uid())
+					.relatedUid(tempLetter.getRelated_letter_uid())
 					.build()
 					);
 		}
@@ -219,6 +261,7 @@ public class LetterServiceImpl implements LetterService{
 			}
 		}
 		catch(Exception e) {
+			log.error("failed to find temp list" + e);
 			return null;
 		}
 		

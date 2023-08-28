@@ -19,4 +19,5 @@ public interface LetterRecipientRepository extends JpaRepository<LetterRecipient
 	List<LetterRecipientEntity> findAllBySender(UserEntity sender);
 	List<LetterRecipientEntity> findAllByHistory(UserHistoryEntity history);
 	List<LetterRecipientEntity> findAllByLetter(LetterEntity letter);
+	List<LetterRecipientEntity> findByRecipientAndLetter(UserEntity recipient, LetterEntity letter);
 }

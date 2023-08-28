@@ -25,8 +25,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: admin
-    url: 
-    password: 
+    url: jdbc:mysql://database-1.cf82kp3ku9xz.ap-northeast-2.rds.amazonaws.com:3306/FWLTC2?autoReconnect=true&useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    password: "kimyd9265&"
     hikari:
       validation-timeout: 300000
   jpa:

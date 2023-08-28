@@ -2,6 +2,7 @@ package com.example.demo.dto;
 
 import java.io.File;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.cloud.ByteArray;
 
 import lombok.Getter;
@@ -16,6 +17,7 @@ public class LetterDTO {
 	String title;
 	String content;
 	long letter_design_uid;
+	@JsonProperty("colorcode")
 	String color_code;
 	boolean reply;
 }
