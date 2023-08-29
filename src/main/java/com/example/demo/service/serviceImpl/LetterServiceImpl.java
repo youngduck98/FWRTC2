@@ -1,5 +1,7 @@
 package com.example.demo.service.serviceImpl;
 
+import static org.hamcrest.CoreMatchers.nullValue;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +14,7 @@ import com.example.demo.dto.AbstractLetterDTO;
 import com.example.demo.dto.LetterAndUserDTO;
 import com.example.demo.dto.LetterDTO;
 import com.example.demo.dto.LetterRequestDTO;
+import com.example.demo.dto.LetterSaveDTO;
 import com.example.demo.dto.TempLetterDTO;
 import com.example.demo.dto.TempLetterRequestDTO;
 import com.example.demo.dto.talkRelatedDTO.CompanyDTO;
@@ -94,11 +97,14 @@ public class LetterServiceImpl implements LetterService{
 	}
 	
 	@Override
-	public Long saveLetter(String token, LetterRequestDTO letter) {
+	public LetterSaveDTO saveLetter(String token, LetterRequestDTO letter) {
 		Optional<UserEntity> userOptional = getUserfromToken(token);
+		LetterSaveDTO dto = new LetterSaveDTO(null, null, null);
+		
 		if(userOptional.isEmpty()) {
 			log.error("custom_error: cant find user in user table but entolled in account table");
-			return null;
+			dto.setError("custom_error: cant find user in user table but entolled in account table");
+			return dto;
 		}
 		
 		log.info("3. try to save letter to database");
@@ -117,45 +123,57 @@ public class LetterServiceImpl implements LetterService{
 		}
 		catch(Exception e){
 			log.error("failed to save letter to database");
-			return null;
+			dto.setError("failed to save letter to database");
+			return dto;
 		}
 		
-		return letterEntity.getUid();
+		dto.setLetter_uid(letterEntity.getUid());
+		
+		return dto;
 	}
 	
 	@Override
-	public Long saveReply(String token, LetterRequestDTO letter) {
+	public LetterSaveDTO saveReply(String token, LetterRequestDTO letter) {
 		// TODO Auto-generated method stub
 		Optional<UserEntity> userOptional = getUserfromToken(token);
+		LetterSaveDTO dto = new LetterSaveDTO(null, null, null);
+		
 		if(userOptional.isEmpty()) {
 			log.error("custom_error: cant find user in user table but entolled in account table");
-			return null;
+			dto.setError("custom_error: can't find user");
+			return dto;
 		}
 		
 		if(letter.getRelated_letter_uid() != null) {
 			Optional<LetterEntity> letterentityOptional = LR.findById(letter.getRelated_letter_uid());
 			if(letterentityOptional.isEmpty()) {
 				log.error("no related letter like that");
-				return null;
+				dto.setError("no related letter like that");
+				return dto;
 			}
 			
 			List<LetterRecipientEntity> letterReList = 
 					LRR.findByRecipientAndLetter(userOptional.get(), letterentityOptional.get());
 			if(!letterReList.isEmpty()) {
 				log.error("alreadly reply to that letter");
-				return null;
+				dto.setError("alreadly reply to that letter");
+				dto.setDate(letterReList.get(0).getReplyTime());
+				return dto;
 			}
 		}
 		
 		Long ret =  null;
 		try {
 			ret = LAT.saveReplyTransaction(userOptional.get(), letter);
+			dto.setLetter_uid(ret);
 		}
 		catch(Exception e){
 			log.error("saveReply" + e);
+			dto.setError("alreadly reply to that letter");
+			return dto;
 		}
 		
-		return ret;
+		return dto;
 	}
 
 	@Override
@@ -211,13 +229,7 @@ public class LetterServiceImpl implements LetterService{
 		if(tempLetter.getRelated_letter_uid() != null) {
 			Optional<LetterEntity> letterentityOptional = LR.findById(tempLetter.getRelated_letter_uid());
 			if(letterentityOptional.isEmpty()) {
-				log.info("no letter like that");
-				return null;
-			}
-			
-			List<LetterRecipientEntity> letterReList = 
-					LRR.findByRecipientAndLetter(userOptional.get(), letterentityOptional.get());
-			if(!letterReList.isEmpty()) {
+				log.error("no letter like that");
 				return null;
 			}
 		}

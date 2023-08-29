@@ -6,14 +6,15 @@ import com.example.demo.dto.AbstractLetterDTO;
 import com.example.demo.dto.LetterAndUserDTO;
 import com.example.demo.dto.LetterDTO;
 import com.example.demo.dto.LetterRequestDTO;
+import com.example.demo.dto.LetterSaveDTO;
 import com.example.demo.dto.TempLetterDTO;
 import com.example.demo.dto.TempLetterRequestDTO;
 import com.example.demo.dto.talkRelatedDTO.CompanyDTO;
 
 public interface LetterService {
 	//letter
-	public Long saveLetter(String token, LetterRequestDTO letter);
-	public Long saveReply(String token, LetterRequestDTO letter);
+	public LetterSaveDTO saveLetter(String token, LetterRequestDTO letter);
+	public LetterSaveDTO saveReply(String token, LetterRequestDTO letter);
 	public LetterDTO getOneLetter(String token, long letterUid);
 	
 	//temp letter

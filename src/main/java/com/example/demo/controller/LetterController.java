@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.LetterDTO;
 import com.example.demo.dto.LetterRequestDTO;
+import com.example.demo.dto.LetterSaveDTO;
 import com.example.demo.dto.talkRelatedDTO.CompanyDTO;
 import com.example.demo.service.LetterService;
 
@@ -31,15 +32,15 @@ public class LetterController {
 	LetterService ls;
 	
 	@PostMapping("/store")
-	public Map<String, Object> changeCompany(@RequestBody LetterRequestDTO letter, @RequestHeader(value="firebase_token") String token){
-		Map<String, Object> result = new HashMap<>();
+	public LetterSaveDTO changeCompany(@RequestBody LetterRequestDTO letter, @RequestHeader(value="firebase_token") String token){
+		LetterSaveDTO ret = new LetterSaveDTO();
 		log.info(letter.toString());
 		if(letter.getRelated_letter_uid() == null)
-			result.put("output", ls.saveLetter(token, letter));
+			ret = ls.saveLetter(token, letter);
 		else {
-			result.put("output", ls.saveReply(token, letter));
+			ret = ls.saveReply(token, letter);
 		}
-		return result;
+		return ret;
 	}
 	
 	@GetMapping("/design")
