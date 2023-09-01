@@ -13,11 +13,16 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class LetterDTO {
-	String letter_uid;
+	Long letter_uid;
+	String sender_uid;//1
 	String title;
 	String content;
 	long letter_design_uid;
 	@JsonProperty("colorcode")
 	String color_code;
 	boolean reply;
+	
+	public boolean getReply() {
+		return this.reply;
+	}
 }

@@ -9,5 +9,5 @@ import lombok.Setter;
 @Builder
 public class LetterAndUserDTO {
 	Long letter_uid;
-	String user_uid;
+	String user_nickname;//2
 }

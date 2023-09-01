@@ -8,8 +8,8 @@ import lombok.Setter;
 @Setter
 @Builder
 public class Talk {
-	String talk_title;
-	String talk_text;
+	String title;
+	String content;
 	long letter_uid;
 	String profile_img_url;
 	String nickname;

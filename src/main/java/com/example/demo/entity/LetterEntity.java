@@ -51,6 +51,7 @@ public class LetterEntity {
 	
 	public LetterDTO getLetterDTO() {
 		LetterDTO letter = new LetterDTO();
+		letter.setSender_uid(this.user.getUid());//1
 		letter.setColor_code(this.colorcode);
 		letter.setContent(this.text);
 		letter.setLetter_design_uid(this.designUid);

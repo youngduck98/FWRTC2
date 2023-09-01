@@ -48,8 +48,8 @@ public class LetterAditionalTransaction {
 	//start
 	public Talk returnTalkFromLetter(LetterEntity letter, UserEntity user) {
 		return Talk.builder()
-				.talk_title(letter.getTitle())
-				.talk_text(letter.getText())
+				.title(letter.getTitle())//4
+				.content(letter.getText())//4
 				.letter_uid(letter.getUid())
 				.profile_img_url(user.getProfile_img_path())
 				.nickname(user.getNickname())

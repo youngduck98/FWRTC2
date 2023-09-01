@@ -229,7 +229,13 @@ public class LetterServiceImpl implements LetterService{
 		if(tempLetter.getRelated_letter_uid() != null) {
 			Optional<LetterEntity> letterentityOptional = LR.findById(tempLetter.getRelated_letter_uid());
 			if(letterentityOptional.isEmpty()) {
-				log.error("no letter like that");
+				log.info("no letter like that");
+				return null;
+			}
+			
+			List<LetterRecipientEntity> letterReList = 
+					LRR.findByRecipientAndLetter(userOptional.get(), letterentityOptional.get());
+			if(!letterReList.isEmpty()) {
 				return null;
 			}
 		}
@@ -323,7 +329,14 @@ public class LetterServiceImpl implements LetterService{
 		if(letterOptional.isEmpty())
 			return null;
 		
-		return letterOptional.get().getLetterDTO();
+		LetterDTO retDto = letterOptional.get().getLetterDTO();
+		
+		List<LetterRecipientEntity> letterRecipientEntities = LRR.findByReply(letterOptional.get());
+		if(retDto.getReply() && letterRecipientEntities.size() != 0) {
+			retDto.setLetter_uid(letterRecipientEntities.get(0).getLetter().getUid());
+		}
+		
+		return retDto;
 	}
 
 	@Override
@@ -372,7 +385,7 @@ public class LetterServiceImpl implements LetterService{
 			for(LetterRecipientEntity a: letterRecipient) {
 				letterAndUserDTOs.add(LetterAndUserDTO.builder()
 						.letter_uid(a.getReply().getUid())
-						.user_uid(a.getRecipient().getUid())
+						.user_nickname(a.getRecipient().getNickname())//2
 						.build());
 			}
 		}
@@ -383,13 +396,24 @@ public class LetterServiceImpl implements LetterService{
 		return letterAndUserDTOs;
 	}
 	
+	public String getRecentText(UserHistoryEntity history, UserEntity user) {
+		List<LetterRecipientEntity> letterRecipientEntities = 
+				LRR.findByHistoryAndSenderOrderByReplyTimeDesc(history, user);
+		
+		if(letterRecipientEntities.size() == 0) {
+			return null;
+		}
+		
+		return letterRecipientEntities.get(0).getReply().getText();
+	}
+	
 	public CompanyDTO ReturnCompanyDtoFromHistory(UserHistoryEntity history, UserEntity user) {
 		return CompanyDTO.builder()
 				.company_name(history.getCompanyName())
 				.company_uid(history.getUid())
 				.companyImg(null)
 				.endDate(history.getDate())
-				.recent_text("text")
+				.recent_text(getRecentText(history, user))
 				.talkList(LAT.ReturnTalkFromHistory(history, user))
 				.build();
 	}
