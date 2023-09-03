@@ -37,9 +37,11 @@ public class LetterEntity {
 	@JoinColumn(name = "user_uid")
 	UserEntity user;
 	
+	/*
 	@ManyToOne
 	@JoinColumn(name = "history_uid")
 	UserHistoryEntity history;
+	*/
 	
 	@Column(name = "colorcode", columnDefinition = "CHAR(36)")
 	String colorcode;
