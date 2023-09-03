@@ -16,5 +16,5 @@ public class TempLetterDTO {
 	long letter_design_uid;
 	@JsonProperty("colorcode")
 	String color_code;
-	Long related_letter_uid;
+	Long related_letter_uid; 
 }

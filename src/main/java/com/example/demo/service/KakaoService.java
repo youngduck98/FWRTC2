@@ -109,9 +109,12 @@ public class KakaoService {
 	        JSONObject account = (JSONObject) jsonObj.get("kakao_account");
 	        uid = jsonObj.get("id").toString();
 	        
-	        if((boolean) account.get("profile_image_needs_agreement")) {
+	        try {
 	        	JSONObject profile = (JSONObject) account.get("profile");
 	        	thumbnail_img_url = String.valueOf(profile.get("thumbnail_image_url"));
+	        }
+	        catch(Exception e) {
+	        	log.info("failed to get profile");
 	        }
 	        
         }

@@ -163,6 +163,9 @@ public class LetterServiceImpl implements LetterService{
 		}
 		
 		Long ret =  null;
+		
+		
+		
 		try {
 			ret = LAT.saveReplyTransaction(userOptional.get(), letter);
 			dto.setLetter_uid(ret);
@@ -240,6 +243,11 @@ public class LetterServiceImpl implements LetterService{
 			}
 		}
 		
+		List<TempLetterEntity> templist = TLR.findByUser(userOptional.get());
+		if(templist.size() >= 5) {
+			TLR.delete(templist.get(0));
+		}
+		
 		log.info("3. try to save temp letter to database");
 		TempLetterEntity templetterEntity;
 		try {
@@ -273,7 +281,7 @@ public class LetterServiceImpl implements LetterService{
 		List<TempLetterDTO> ret = new ArrayList<>();
 		
 		try {
-			List<TempLetterEntity> temp_letter_List = TLR.findAll();
+			List<TempLetterEntity> temp_letter_List = TLR.findByUser(userOptional.get());
 			for(TempLetterEntity letter: temp_letter_List) {
 				ret.add(letter.getTempLetterDTO());
 			}
@@ -333,7 +341,7 @@ public class LetterServiceImpl implements LetterService{
 		
 		List<LetterRecipientEntity> letterRecipientEntities = LRR.findByReply(letterOptional.get());
 		if(retDto.getReply() && letterRecipientEntities.size() != 0) {
-			retDto.setLetter_uid(letterRecipientEntities.get(0).getLetter().getUid());
+			retDto.setRelated_letter_uid(letterRecipientEntities.get(0).getLetter().getUid());//7
 		}
 		
 		return retDto;

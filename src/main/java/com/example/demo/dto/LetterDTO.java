@@ -20,6 +20,7 @@ public class LetterDTO {
 	long letter_design_uid;
 	@JsonProperty("colorcode")
 	String color_code;
+	Long related_letter_uid;//7
 	boolean reply;
 	
 	public boolean getReply() {

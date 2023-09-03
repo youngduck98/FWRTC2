@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +30,7 @@ public class TempLetterController {
 	@Autowired
 	LetterService ls;
 	
-	@PostMapping("/store")
+	@PutMapping("/store")
 	public Map<String, Object> TempLetterSave(@RequestBody TempLetterRequestDTO letter, @RequestHeader(value="firebase_token") String token){
 		log.info("TempLetterSave");
 		Map<String, Object> result = new HashMap<>();

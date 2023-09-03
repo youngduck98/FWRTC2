@@ -13,4 +13,5 @@ import java.util.Optional;
 @Repository
 public interface TempLetterRepository extends JpaRepository<TempLetterEntity, Long>{
 	List<TempLetterEntity> findByRelatedUidAndUser(Long relatedUid, UserEntity user);
+	List<TempLetterEntity> findByUser(UserEntity user);//6
 }

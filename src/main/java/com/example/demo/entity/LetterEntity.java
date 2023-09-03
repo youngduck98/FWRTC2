@@ -37,6 +37,10 @@ public class LetterEntity {
 	@JoinColumn(name = "user_uid")
 	UserEntity user;
 	
+	@ManyToOne
+	@JoinColumn(name = "history_uid")
+	UserHistoryEntity history;
+	
 	@Column(name = "colorcode", columnDefinition = "CHAR(36)")
 	String colorcode;
 	
@@ -57,6 +61,7 @@ public class LetterEntity {
 		letter.setLetter_design_uid(this.designUid);
 		letter.setReply(this.reply);
 		letter.setTitle(this.title);
+		//letter.setLetter_uid(this.uid);//7
 		
 		return letter;
 	}
