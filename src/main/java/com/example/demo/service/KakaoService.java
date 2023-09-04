@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import static org.hamcrest.CoreMatchers.nullValue;
+
 import java.util.Optional;
 
 import org.json.simple.JSONObject;
@@ -35,7 +37,9 @@ public class KakaoService {
 	private final UserRepository Ur;
 	private final KakaoAditionalTransaction kat;
 	private final static String backdoor = "0000";
+	private final static String backdoor2 = "0001";
 	private final static String default_uid = "fake_user";
+	private final static String default_uid2 = "fake_user2";
 	
 	public Optional<String> KaKaoFirebaseLoginProcess(String accessToken) {
 		
@@ -45,6 +49,15 @@ public class KakaoService {
 			log.info("custom_info: backdoor token");
 			KakaoUserInfo = Optional.ofNullable(KakaoVo.builder()
 					.uid(default_uid)
+					.email(null)
+					.img_path(null)
+					.nickname(null)
+					.build());
+		}
+		else if(accessToken.equals(backdoor2)) {
+			log.info("custom_info: backdoor token");
+			KakaoUserInfo = Optional.ofNullable(KakaoVo.builder()
+					.uid(default_uid2)
 					.email(null)
 					.img_path(null)
 					.nickname(null)
@@ -102,25 +115,26 @@ public class KakaoService {
         String email = null;
         String nickname = null;
         String thumbnail_img_url = null;
-        
+        JSONParser jsonParser = null;
+        JSONObject jsonObj = null;
+        JSONObject account = null;
         try {
-	        JSONParser jsonParser = new JSONParser();
-	        JSONObject jsonObj    = (JSONObject) jsonParser.parse(response.getBody());
-	        JSONObject account = (JSONObject) jsonObj.get("kakao_account");
+	        jsonParser = new JSONParser();
+	        jsonObj    = (JSONObject) jsonParser.parse(response.getBody());
+	        account = (JSONObject) jsonObj.get("kakao_account");
 	        uid = jsonObj.get("id").toString();
-	        
-	        try {
-	        	JSONObject profile = (JSONObject) account.get("profile");
-	        	thumbnail_img_url = String.valueOf(profile.get("thumbnail_image_url"));
-	        }
-	        catch(Exception e) {
-	        	log.info("failed to get profile");
-	        }
-	        
         }
         catch (ParseException e) {
         	log.error("custom_error: failed to parse data from kakao");
         	return Optional.ofNullable(null);
+        }
+        
+        try {
+        	JSONObject profile = (JSONObject) account.get("profile");
+        	thumbnail_img_url = String.valueOf(profile.get("thumbnail_image_url"));
+        }
+        catch(Exception e) {
+        	log.info("failed to get profile");
         }
         
         KakaoVo kakaoVo = KakaoVo.builder()

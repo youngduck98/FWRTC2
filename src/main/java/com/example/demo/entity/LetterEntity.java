@@ -1,6 +1,8 @@
 package com.example.demo.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import com.example.demo.dto.LetterDTO;
 
@@ -11,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,11 +40,9 @@ public class LetterEntity {
 	@JoinColumn(name = "user_uid")
 	UserEntity user;
 	
-	/*
 	@ManyToOne
 	@JoinColumn(name = "history_uid")
 	UserHistoryEntity history;
-	*/
 	
 	@Column(name = "colorcode", columnDefinition = "CHAR(36)")
 	String colorcode;
@@ -54,6 +55,14 @@ public class LetterEntity {
 	
 	@Column(name = "reply", columnDefinition = "TINYINT")
 	Boolean reply;
+	
+	@Column(name = "datetime")
+	LocalDateTime datetime;
+	
+	@PrePersist
+	public void setdate() {
+		this.datetime = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+	}
 	
 	public LetterDTO getLetterDTO() {
 		LetterDTO letter = new LetterDTO();

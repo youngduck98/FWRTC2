@@ -30,11 +30,16 @@ public class UserServiceImpl implements UserService{
 	private final AccountInfoRepositoy AIR;
 	private final UserAditionalTransaction UAT;
 	private static final String backdoor = "0000"; 
+	private static final String backdoor2 = "0001"; 
 	private final static String default_kakao_uid = "fake_user";
+	private final static String default_kakao_uid2 = "fake_user2";
 	
 	public Optional<String> extractKakaoUidInTokenOptional(String token){
 		String kakao_uid = default_kakao_uid;
-		if(!token.equals(backdoor)) {
+		if(token.equals(backdoor2))
+			kakao_uid = default_kakao_uid2;
+		
+		if(!token.equals(backdoor) && !token.equals(backdoor2)) {
 			try {
 				FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(token);
 				kakao_uid = decodedToken.getUid();
@@ -67,6 +72,8 @@ public class UserServiceImpl implements UserService{
 	public String change_user_company(String token, String company_name) {
 		log.info("0. check token is vaild and extract kakao_uid");
 		String kakao_uid = default_kakao_uid;
+		if(token.equals(backdoor2))
+			kakao_uid = default_kakao_uid2;
 		try {
 			kakao_uid = extractKakaoUidInTokenOptional(token).get();
 		}
@@ -111,6 +118,9 @@ public class UserServiceImpl implements UserService{
 		 */
 		log.info("0. check token is vaild and extract kakao_uid");
 		String kakao_uid = default_kakao_uid;
+		if(token.equals(backdoor2))
+			kakao_uid = default_kakao_uid2;
+		
 		try {
 			kakao_uid = extractKakaoUidInTokenOptional(token).get();
 		}
@@ -159,6 +169,9 @@ public class UserServiceImpl implements UserService{
 		 */
 		log.info("0. extract kakaouid in token");
 		String kakao_uid = default_kakao_uid;
+		if(token.equals(backdoor2))
+			kakao_uid = default_kakao_uid2;
+		
 		try {
 			kakao_uid = extractKakaoUidInTokenOptional(token).get();
 		}
@@ -196,6 +209,9 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public boolean changeUserEnddate(String token, DateDTO date) {
 		String kakao_uid = default_kakao_uid;
+		if(token.equals(backdoor2))
+			kakao_uid = default_kakao_uid2;
+		
 		try {
 			kakao_uid = extractKakaoUidInTokenOptional(token).get();
 		}
@@ -234,6 +250,9 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public Optional<UserVo> userInfo(String token) {
 		String kakao_uid = default_kakao_uid;
+		if(token.equals(backdoor2))
+			kakao_uid = default_kakao_uid2;
+		
 		try {
 			log.info("try to get kakaoo_uid in token");
 			kakao_uid = extractKakaoUidInTokenOptional(token).get();

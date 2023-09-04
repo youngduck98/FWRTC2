@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.attoparser.config.ParseConfiguration.UniqueRootElementPresence;
 import org.springframework.data.repository.init.UnmarshallingResourceReader;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -71,6 +72,10 @@ public class LetterAditionalTransaction {
 	}
 	
 	public List<TalkTalk> ReturnTalkFromHistory(UserHistoryEntity history, UserEntity user) {
+		List<TalkTalk> ret = new ArrayList<>();
+		
+		List<LetterEntity> letterEntities = LR.findByUserAndHistory(user, history);
+		/*
 		List<LetterRecipientEntity> letterRecipientEntities = LRR.findAllByHistory(history);//history가 letter 기준으로 update 되던가? ㅇㅇ
 		Set<LetterEntity> letterSet = new HashSet<LetterEntity>();
 		List<TalkTalk> ret = new ArrayList<>();
@@ -84,6 +89,10 @@ public class LetterAditionalTransaction {
 		for(LetterEntity letterUid: letterSet) {
 			ret.add(ReturnTalkTalkFromLetter(letterUid, user));
 		}
+		*/
+		for(LetterEntity letterUid: letterEntities) {
+			ret.add(ReturnTalkTalkFromLetter(letterUid, user));
+		}
 		
 		return ret;
 	}
@@ -94,6 +103,7 @@ public class LetterAditionalTransaction {
 		LetterEntity letterEntity = LetterEntity.builder()
 				.designUid(letter.getLetter_design_uid())
 				.user(user)
+				.history(user.getHistory())
 				.colorcode(letter.getColorcode())
 				.title(letter.getTitle())
 				.text(letter.getContent())

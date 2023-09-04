@@ -114,6 +114,7 @@ public class LetterServiceImpl implements LetterService{
 					LetterEntity.builder()
 					.designUid(letter.getLetter_design_uid())
 					.user(userOptional.get())
+					.history(userOptional.get().getHistory())
 					.colorcode(letter.getColorcode())
 					.title(letter.getTitle())
 					.text(letter.getContent())
