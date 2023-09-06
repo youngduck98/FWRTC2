@@ -105,7 +105,7 @@ public class LetterAditionalTransaction {
 			TLR.delete(tempLetterEntity);
 		}
 		
-		if(letterEntity.getUid() == Long.valueOf(letter.getLetter_design_uid())) {
+		if(letterEntity.getUid() == Long.valueOf(letter.getRelated_letter_uid())) {
 			return null;
 		}
 		LR.save(letterEntity);
